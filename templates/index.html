@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather App</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@4.0.1"></script>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #search-form {
+            margin-bottom: 20px;
+        }
+
+        #suggestions {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #ccc;
+            max-width: 300px;
+        }
+
+        #suggestions li {
+            padding: 5px;
+            cursor: pointer;
+            background: #f9f9f9;
+        }
+
+        #suggestions li:hover {
+            background: #eaeaea;
+        }
+
+        .weather-section {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .weather-info {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .chart-wrapper {
+            flex: 1;
+            min-width: 250px;
+            max-width: 500px;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+
+        .forecast-icon {
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+        }
+
+        #weather-result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Weather App</h1>
+
+    <form id="search-form">
+        <input type="text" id="location-input" placeholder="Enter location" autocomplete="off">
+        <button type="submit">Get Weather</button>
+    </form>
+    <button onclick="window.location.href='/history'" style="margin-top: 10px;">View History</button>
+    <ul id="suggestions"></ul>
+    <div id="error-message" style="color:red; margin-bottom: 10px;"></div>
+    <div id="weather-result"></div>
+    <div id="youtube-videos" style="margin-top: 20px;"></div>
+</body>
+</html>

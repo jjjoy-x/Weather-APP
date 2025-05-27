@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search History</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search History</h1>
+
+    <label>Location:</label>
+    <input type="text" id="filter-location">
+
+    <label>Start Date:</label>
+    <input type="date" id="filter-start">
+
+    <label>End Date:</label>
+    <input type="date" id="filter-end">
+
+    <button onclick="loadHistory(1)">Search</button>
+    <button onclick="exportCSV()">Export CSV</button>
+
+    <table id="history-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Location</th>
+                <th>Temp</th>
+                <th>Humidity</th>
+                <th>Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div id="pagination"></div>
+
+    <script>
+        let currentPage = 1;
+
+        function loadHistory(page = 1) {
+            currentPage = page;
+            const loc = document.getElementById("filter-location").value;
+            const start = document.getElementById("filter-start").value;
+            const end = document.getElementById("filter-end").value;
+
+            const params = new URLSearchParams({ location: loc, start: start, end: end, page: page });
+            fetch("/api/history?" + params.toString())
+                .then(res => res.json())
+                .then(data => {
+                    const tbody = document.querySelector("#history-table tbody");
+                    tbody.innerHTML = '';
+                    data.records.forEach(item => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td contenteditable onblur="update(${item.id}, 'location', this.textContent)">${item.location}</td>
+                            <td contenteditable onblur="update(${item.id}, 'temperature', this.textContent)">${item.temperature}</td>
+                            <td contenteditable onblur="update(${item.id}, 'humidity', this.textContent)">${item.humidity}</td>
+                            <td>${item.recorded_at}</td>
+                            <td><button onclick="del(${item.id})">Delete</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    const pager = document.getElementById("pagination");
+                    pager.innerHTML = '';
+                    for (let i = 1; i <= data.total_pages; i++) {
+                        const btn = document.createElement("button");
+                        btn.textContent = i;
+                        btn.disabled = i === data.current_page;
+                        btn.onclick = () => loadHistory(i);
+                        pager.appendChild(btn);
+                    }
+                });
+        }
+
+        function update(id, field, value) {
+            fetch(`/api/history/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ field, value })
+            }).then(() => loadHistory(currentPage));
+        }
+
+        function del(id) {
+            if (!confirm("Are you sure?")) return;
+            fetch(`/api/history/${id}`, { method: "DELETE" }).then(() => loadHistory(currentPage));
+        }
+
+        function exportCSV() {
+            const loc = document.getElementById("filter-location").value;
+            const start = document.getElementById("filter-start").value;
+            const end = document.getElementById("filter-end").value;
+            const url = `/api/history/export?location=${encodeURIComponent(loc)}&start=${start}&end=${end}`;
+            window.location.href = url;
+        }
+
+        window.onload = () => loadHistory(1);
+    </script>
+</body>
+</html>
