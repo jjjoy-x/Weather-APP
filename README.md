@@ -96,6 +96,7 @@ App will be available at http://127.0.0.1:5000
 
 ### File Structure
 
+```
 ├── app.py              # Flask backend routes and logic
 ├── db.py               # Database connection and CRUD functions
 ├── weather_api.py      # OpenWeatherMap API wrappers
@@ -106,6 +107,7 @@ App will be available at http://127.0.0.1:5000
 │   └── history.html    # History page template
 └── static/
     └── script.js       # Frontend JavaScript logic
+```
 
 ### Note
 
