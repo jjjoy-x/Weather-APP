@@ -12,6 +12,11 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/info')
+def info_page():
+    return render_template('info.html')
+
+
 @app.route('/search_location')
 def search_location():
     q = request.args.get('q', '').strip()
